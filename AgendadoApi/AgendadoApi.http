@@ -1,0 +1,6 @@
+@AgendadoApi_HostAddress = http://localhost:5097
+
+GET {{AgendadoApi_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
