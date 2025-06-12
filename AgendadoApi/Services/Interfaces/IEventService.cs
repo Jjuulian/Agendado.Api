@@ -6,8 +6,9 @@ namespace AgendadoApi.Services.Interfaces
     public interface IEventService
     {
         Task<List<Event>> GetEventsAsync(int userId);
-        Task<Event> CreateEventAsync(int userId, EventDto dto);
-        Task<Event?> UpdateEventAsync(int userId, int eventId, EventDto dto);
-        Task<bool> DeleteEventAsync(int userId, int eventId);
+        Task<Event> CreateEventAsync(EventDto dto);
+        Task<Event?> UpdateEventAsync(int eventId, EventDto dto);
+        Task<bool> DeleteEventAsync(int eventId);
+        Task<List<Event>> FilterEventsAsync(int userId, EventFilterDto filter);
     }
 }

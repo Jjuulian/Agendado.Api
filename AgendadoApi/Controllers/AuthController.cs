@@ -30,9 +30,13 @@ namespace AgendadoApi.Controllers
         {
             var result = await _userService.LoginUserAsync(dto);
             if (!result.Success)
-                return Unauthorized(result.Message); // Fix: Unauthorized is now accessible  
+                return Unauthorized(result.Message); 
 
-            return Ok(result);
+            return Ok(new
+            {
+                result.Message,
+                User = result.User
+            });
         }
     }
 }

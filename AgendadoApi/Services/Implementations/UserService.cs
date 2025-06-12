@@ -3,6 +3,7 @@ using AgendadoApi.DTOs;
 using AgendadoApi.Helpers;
 using AgendadoApi.Models;
 using AgendadoApi.Services.Interfaces;
+using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
 
 namespace AgendadoApi.Services.Implementations
@@ -39,14 +40,24 @@ namespace AgendadoApi.Services.Implementations
             return (true, "Usuario registrado correctamente.");
         }
 
-        public async Task<(bool Success, string Message)> LoginUserAsync(UserLoginDto dto)
+        public async Task<(bool Success, string Message, UserDto? User)> LoginUserAsync(UserLoginDto dto)
         {
             var user = await _context.Users.FirstOrDefaultAsync(u => u.Email == dto.Email);
 
             if (user == null || !PasswordHasher.VerifyPassword(dto.Password, user.PasswordHash))
-                return (false, "Credenciales inválidas.");
+                return (false, "Credenciales inválidas.", null);
 
-            return (true, "Login correcto.");
+            var userDto = new UserDto
+            {
+                UserId = user.UserId,
+                Name = user.Name,
+                Surname = user.Surname,
+                Surname2 = user.Surname2,
+                BirthDate = user.BirthDate,
+                Email = user.Email
+            };
+
+            return (true, "Login correcto.", userDto);
         }
     }
 }

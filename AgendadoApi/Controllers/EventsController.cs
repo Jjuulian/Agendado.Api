@@ -5,6 +5,8 @@ using System.Security.Claims;
 
 namespace AgendadoApi.Controllers
 {
+    [ApiController]
+    [Route("api/[controller]")]
     public class EventsController : ControllerBase
     {
         private readonly IEventService _eventService;
@@ -16,10 +18,9 @@ namespace AgendadoApi.Controllers
 
         private int GetUserId() => int.Parse(User.FindFirstValue(ClaimTypes.NameIdentifier)!);
 
-        [HttpGet]
-        public async Task<IActionResult> GetAll()
+        [HttpGet("{userId}")]
+        public async Task<IActionResult> GetAll(int userId)
         {
-            var userId = GetUserId();
             var events = await _eventService.GetEventsAsync(userId);
             return Ok(events);
         }
@@ -27,16 +28,14 @@ namespace AgendadoApi.Controllers
         [HttpPost]
         public async Task<IActionResult> Create(EventDto dto)
         {
-            var userId = GetUserId();
-            var created = await _eventService.CreateEventAsync(userId, dto);
+            var created = await _eventService.CreateEventAsync(dto);
             return Ok(created);
         }
 
         [HttpPut("{id}")]
-        public async Task<IActionResult> Update(int id, EventDto dto)
+        public async Task<IActionResult> Update(int userId,int id, [FromBody] EventDto dto)
         {
-            var userId = GetUserId();
-            var updated = await _eventService.UpdateEventAsync(userId, id, dto);
+            var updated = await _eventService.UpdateEventAsync(id, dto);
             if (updated == null)
                 return NotFound();
 
@@ -46,12 +45,19 @@ namespace AgendadoApi.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(int id)
         {
-            var userId = GetUserId();
-            var success = await _eventService.DeleteEventAsync(userId, id);
+            var success = await _eventService.DeleteEventAsync(id);
             if (!success)
                 return NotFound();
 
             return NoContent();
+        }
+
+        [HttpPost("filter")]
+        public async Task<IActionResult> Filter(int userId,[FromBody] EventFilterDto filter)
+        {
+            var Id = userId;
+            var events = await _eventService.FilterEventsAsync(Id, filter);
+            return Ok(events);
         }
     }
 }
